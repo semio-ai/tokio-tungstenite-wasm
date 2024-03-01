@@ -19,6 +19,14 @@ pub async fn connect<S: AsRef<str>>(url: S) -> Result<WebSocketStream> {
     ws::connect(url.as_ref()).await
 }
 
+#[cfg(any(feature = "native-tls", feature = "__rustls-tls"))]
+#[cfg(not(target_arch = "wasm32"))]
+pub use ws::connect_custom_tls;
+
+#[cfg(any(feature = "native-tls", feature = "__rustls-tls"))]
+#[cfg(not(target_arch = "wasm32"))]
+pub use ws::Connector;
+
 #[cfg(test)]
 mod tests {
     use super::*;
