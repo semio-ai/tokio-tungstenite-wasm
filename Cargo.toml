@@ -6,7 +6,7 @@ repository = "https://github.com/TannerRogalsky/tokio-tungstenite-wasm"
 homepage = "https://github.com/TannerRogalsky/tokio-tungstenite-wasm"
 license-file = "LICENSE"
 readme = "README.md"
-edition = "2018"
+edition = "2021"
 
 [features]
 native-tls = ["tokio-tungstenite/native-tls", "dep:native-tls"]
