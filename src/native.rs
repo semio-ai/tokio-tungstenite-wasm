@@ -2,7 +2,10 @@ use futures_util::{Sink, Stream, StreamExt};
 use std::pin::Pin;
 use std::task::{Context, Poll};
 pub use tokio_tungstenite::tungstenite::{Bytes, Utf8Bytes};
+
+#[cfg(any(feature = "native-tls", feature = "__rustls-tls"))]
 pub use tokio_tungstenite::Connector;
+
 use tokio_tungstenite::{
     self as tg,
     tungstenite::{
