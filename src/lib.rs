@@ -47,11 +47,10 @@ mod native_tests {
 
     #[tokio::test]
     async fn ping_test() {
-        let port = rand::random();
         let ip_addr = std::net::Ipv4Addr::from([127, 0, 0, 1]);
-        let listener = tokio::net::TcpListener::bind((ip_addr, port))
-            .await
-            .unwrap();
+        let listener = tokio::net::TcpListener::bind((ip_addr, 0)).await.unwrap();
+        let addr = listener.local_addr().map_err(Error::Io).unwrap();
+        let port = addr.port();
 
         let payload = vec![0, 1, 2];
         let pong = tokio_tungstenite::tungstenite::Message::Pong(payload.clone().into());
