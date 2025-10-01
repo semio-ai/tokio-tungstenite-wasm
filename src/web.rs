@@ -200,14 +200,16 @@ mod stream {
             match std::convert::TryFrom::try_from(self.inner.ready_state()) {
                 Ok(ReadyState::Open) => {
                     match item {
-                        crate::Message::Text(text) => self
-                            .inner
-                            .send_with_str(&text)
-                            .map_err(|_| crate::Error::Utf8)?,
-                        crate::Message::Binary(bin) => self
-                            .inner
-                            .send_with_u8_array(&bin)
-                            .map_err(|_| crate::Error::Utf8)?,
+                        crate::Message::Text(text) => {
+                            self.inner.send_with_str(&text).map_err(|e| {
+                                crate::Error::Utf8(format!("Sending {text:?} failed: {e:?}"))
+                            })?
+                        }
+                        crate::Message::Binary(bin) => {
+                            self.inner.send_with_u8_array(&bin).map_err(|e| {
+                                crate::Error::Utf8(format!("Sending {bin:?} failed: {e:?}"))
+                            })?
+                        }
                         crate::Message::Close(frame) => match frame {
                             None => self
                                 .inner
@@ -257,7 +259,9 @@ impl std::convert::TryFrom<web_sys::MessageEvent> for crate::Message {
             }
             payload if payload.is_string() => match payload.as_string() {
                 Some(text) => Ok(crate::Message::text(text)),
-                None => Err(crate::Error::Utf8),
+                None => Err(crate::Error::Utf8(
+                    "JS value is a string but cannot be viewed as such".to_string(),
+                )),
             },
             payload if payload.is_instance_of::<web_sys::Blob>() => {
                 Err(crate::Error::BlobFormatUnsupported)
